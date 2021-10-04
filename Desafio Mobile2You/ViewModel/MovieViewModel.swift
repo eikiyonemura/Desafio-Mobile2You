@@ -61,7 +61,7 @@ class MovieViewModel {
     }
     
     func getGenres(){
-        if let urlGenres = URL(string: urlGenre+api+"&language=pt-BR"){
+        if let urlGenres = URL(string: urlGenre+api+"&language=en-US"){
             let tarefa = URLSession.shared.dataTask(with: urlGenres) { dados, requisicao, erro in
                 if erro == nil {
                     if let dadosRetorno = dados{

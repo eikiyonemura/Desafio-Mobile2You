@@ -30,8 +30,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         movieViewModel.delegate = self
         movieViewModel.getMovie()
+        movieViewModel.getGenres()
         movieViewModel.getMovieSimilarList()
-        //movieViewModel.getGenres()
+        
         
     }
 
@@ -53,10 +54,33 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MovieSimilarCell
-        cell.tituloLabel.text = movieSimilarList[indexPath.row]["titulo"] as? String
-        let dataLancamento = movieSimilarList[indexPath.row]["data"] as? String
-        cell.infoLabel.text = String(dataLancamento!.prefix(4))
         
+        // Título
+        cell.tituloLabel.text = movieSimilarList[indexPath.row]["titulo"] as? String
+        
+        // Informações
+        let dataLancamento = movieSimilarList[indexPath.row]["data"] as? String
+        var genreIdsName: [String] = []
+        let genre = movieSimilarList[indexPath.row]["genreId"] as! [Int]
+        for x in 0...genre.count - 1{
+            for y in 0...genreList.count - 1{
+                if genre[x] == genreList[y]["id"] as? Int{
+                    genreIdsName.append(genreList[y]["name"] as! String)
+                }
+            }
+        }
+        var generos: String = ""
+        for x in 0...genreIdsName.count - 1{
+            if x == 0 {
+                generos = generos + genreIdsName[x]
+            } else {
+                generos = generos + ", " + genreIdsName[x]
+            }
+        }
+        cell.infoLabel.text = String(dataLancamento!.prefix(4) + " " + generos)
+        
+        
+        // Imagem
         let backdrop = movieSimilarList[indexPath.row]["backdrop_path"] as! String
         let movieImg = URL.init(string: "https://image.tmdb.org/t/p/w500"+backdrop)
         do{
@@ -91,7 +115,6 @@ extension ViewController: MovieViewModelDelegate{
             do{
                 let data = try Data(contentsOf: imgURL!)
                 self.imagemFilme.image = UIImage(data: data)
-                
             }catch{
                 print("Erro:\(error)")
             }
@@ -122,5 +145,6 @@ extension ViewController: MovieViewModelDelegate{
             let dict = ["id": genres.genres[i].id, "name":genres.genres[i].name] as [String:Any]
             self.genreList.append(dict)
         }
+        
     }
 }
